@@ -1,6 +1,8 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "sortImports": {},
-  "sortTailwindcss": { "stylesheet": "./src/app/globals.css" },
+  "sortTailwindcss": {
+    "stylesheet": "./src/app/styles/globals.css"
+  },
   "ignorePatterns": ["docs/**", "drizzle/**", "AGENTS.md", "bun.lock"]
 }

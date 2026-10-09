@@ -1,0 +1,1 @@
+export { healthGET } from "./health";
