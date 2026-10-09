@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "oxlint",
+    "lint:fsd": "steiger ./src",
+    "lint:rules": "bash scripts/verify-lint.sh",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "typecheck": "tsc --noEmit"
@@ -18,13 +20,17 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@feature-sliced/steiger-plugin": "^0.8.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-boundaries": "^7.2.0",
     "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
+    "steiger": "^0.7.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
