@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "nextjs", "import"],
+  "categories": { "correctness": "error" },
+  "ignorePatterns": ["drizzle/**", "scripts/lint-fixtures/**"],
+  "rules": {
+    "import/no-cycle": "error"
+  }
+}
