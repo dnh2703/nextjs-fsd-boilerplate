@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js FSD Boilerplate
 
-## Getting Started
+Personal fullstack starter: **Next.js 16** (App Router, Cache Components, React Compiler) organized with
+**[Feature-Sliced Design](https://feature-sliced.design)**, linted by **oxlint** + **Steiger**, formatted by **oxfmt**,
+tested with **Vitest** + **Playwright**, backed by **Postgres** + **Drizzle**.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install                  # also installs git hooks (lefthook)
+cp .env.example .env.local
+bun run db:up                # Postgres 17 in Docker, host port 54329
+bun run db:migrate
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Folder layout
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path           | What lives there                                                                             |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `app/`         | **Next.js routing only.** Every file is a one-line re-export from `src/`.                    |
+| `pages/`       | Empty on purpose: it makes Next ignore `src/pages`. Don't add files.                         |
+| `src/app`      | FSD **app** layer: root layout, global styles, route handler implementations (`api-routes`). |
+| `src/pages`    | Page slices: compose widgets for one route.                                                  |
+| `src/widgets`  | Large self-contained UI blocks.                                                              |
+| `src/features` | User interactions that deliver value (forms + server actions).                               |
+| `src/entities` | Business entities: DB tables, queries, entity UI.                                            |
+| `src/shared`   | Business-agnostic code: `config`, `db`, `ui`, `lib`.                                         |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Import rules (enforced)
 
-## Learn More
+- A layer imports only from layers **below** it: app → pages → widgets → features → entities → shared.
+- No imports between slices on the same layer. Entities may reference each other only via `@x`
+  (`@/entities/user/@x/todo`).
+- Across slices, import only the **public API**: `@/features/create-todo`, never `@/features/create-todo/ui/...`.
+  Inside a slice, use relative imports. `shared` and `app` are imported by segment (`@/shared/ui/button`).
+- Server-only exports go in the slice's `index.server.ts` (first line `import "server-only";`).
+  Import it as `@/entities/todo/index.server`.
+- Files with `"use client"` are named `*.client.tsx`; they may not import `index.server` or `server-only`.
 
-To learn more about Next.js, take a look at the following resources:
+`bun run lint` (oxlint + eslint-plugin-boundaries) checks imports; `bun run lint:fsd` (Steiger) checks structure;
+`bun run lint:rules` proves the rules still catch violations.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Where server code goes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Concern        | Location                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| DB client      | `src/shared/db` (`getDb()`)                                                              |
+| Env vars       | `src/shared/config` (`getServerEnv()`, validated with zod)                               |
+| Tables         | `src/entities/<x>/model/<x>.schema.ts` (picked up by `drizzle.config.ts`)                |
+| Reads          | `src/entities/<x>/api/*`, exported from `index.server.ts`, called from server components |
+| Writes         | `src/features/<x>/api/*.action.ts` (`"use server"`)                                      |
+| Route handlers | `src/app/api-routes`, re-exported from `app/api/**/route.ts`                             |
 
-## Deploy on Vercel
+## Tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Unit: colocate `*.test.ts(x)` next to the file under test. Shared helpers: `@/shared/lib/test`.
+  Test files are exempt from the FSD import rules.
+- E2E: `tests/e2e/` (Playwright). Needs a running, migrated DB; builds and serves the app on port 3100.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+| Script                                               | Does                                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `dev` / `build` / `start`                            | Next.js                                                                      |
+| `check`                                              | format check + lint + FSD lint + lint-rule fixtures + typecheck + unit tests |
+| `lint` / `lint:fsd` / `lint:rules`                   | oxlint / Steiger / fixture verification                                      |
+| `format` / `format:check`                            | oxfmt                                                                        |
+| `typecheck`                                          | `tsc --noEmit`                                                               |
+| `test` / `test:watch` / `test:e2e`                   | Vitest / Vitest watch / Playwright                                           |
+| `db:up` / `db:generate` / `db:migrate` / `db:studio` | Docker Postgres / Drizzle Kit                                                |
+
+Git hooks: pre-commit runs oxfmt + oxlint on staged files and Steiger; pre-push runs typecheck + unit tests.
+
+## Removing the example
+
+The todo example is meant to be deleted:
+
+1. Delete `src/entities/todo`, `src/features/create-todo`, `src/widgets/todo-list`, `tests/e2e/todo.spec.ts`.
+2. Replace the body of `src/pages/home/ui/home-page.tsx`.
+3. Remove the example-slices block from `steiger.config.ts`.
+4. Delete `drizzle/` and run `bun run db:generate` once you have your own tables.

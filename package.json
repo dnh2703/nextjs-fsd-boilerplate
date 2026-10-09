@@ -19,7 +19,9 @@
     "db:up": "docker compose up -d --wait",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "prepare": "lefthook install",
+    "check": "bun run format:check && bun run lint && bun run lint:fsd && bun run lint:rules && bun run typecheck && bun run test"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",
@@ -47,6 +49,7 @@
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-boundaries": "^7.2.0",
     "jsdom": "^30.1.2",
+    "lefthook": "^2.2.1",
     "oxfmt": "^0.72.0",
     "oxlint": "^1.87.0",
     "steiger": "^0.7.0",
