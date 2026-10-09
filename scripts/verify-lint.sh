@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Proves the FSD lint rules catch violations and allow the documented exemptions.
-# Each fixture lives in scripts/lint-fixtures/<pass|fail>-<name>/src/**. It is copied
-# into src/, linted with oxlint, then removed. "fail-*" fixtures must make oxlint report
+# Each fixture lives in scripts/lint-fixtures/<pass|fail>-<name>/{src,app}/**. Its slices
+# (src/<layer>/<slice>) and route folders (app/<route>) are copied into the repo, linted
+# with oxlint, then removed. "fail-*" fixtures must make oxlint report
 # the rule named in their `expected-rule` file (so an unrelated error, or "No files found",
 # never counts as caught); "pass-*" fixtures must lint clean.
 set -euo pipefail
@@ -23,17 +24,23 @@ for fixture in scripts/lint-fixtures/*/; do
   name=$(basename "$fixture")
   expect=${name%%-*}
 
-  while IFS= read -r slice_dir; do
-    target="src/${slice_dir#"${fixture}src/"}"
-    if [ -e "$target" ]; then
-      echo "refusing to overwrite existing $target" >&2
-      exit 2
-    fi
-    created+=("$target")
-  done < <(find "${fixture}src" -mindepth 2 -maxdepth 2 -type d)
+  for top in src app; do
+    if [ ! -d "${fixture}${top}" ]; then continue; fi
+    depth=2 # src/<layer>/<slice>
+    if [ "$top" = "app" ]; then depth=1; fi # app/<route>
 
-  cp -R "${fixture}src/." src/
-  files=$(cd "$fixture" && find src -type f | sort)
+    while IFS= read -r copied_dir; do
+      target="${top}/${copied_dir#"${fixture}${top}/"}"
+      if [ -e "$target" ]; then
+        echo "refusing to overwrite existing $target" >&2
+        exit 2
+      fi
+      created+=("$target")
+    done < <(find "${fixture}${top}" -mindepth "$depth" -maxdepth "$depth" -type d)
+
+    cp -R "${fixture}${top}/." "${top}/"
+  done
+  files=$(cd "$fixture" && find src app -type f 2>/dev/null | sort || true)
 
   # shellcheck disable=SC2086
   if output=$($oxlint $files 2>&1); then status=0; else status=$?; fi

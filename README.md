@@ -37,6 +37,7 @@ bun run dev
 - Server-only exports go in the slice's `index.server.ts` (first line `import "server-only";`).
   Import it as `@/entities/todo/index.server`.
 - Files with `"use client"` are named `*.client.tsx`; they may not import `index.server` or `server-only`.
+- Route files in root `app/` re-export through `@/` aliases only (`@/pages/home`), never relative paths into `src/`.
 
 `bun run lint` (oxlint + eslint-plugin-boundaries) checks imports; `bun run lint:fsd` (Steiger) checks structure;
 `bun run lint:rules` proves the rules still catch violations.

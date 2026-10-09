@@ -2,18 +2,50 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc", "react", "nextjs", "import"],
   "jsPlugins": ["eslint-plugin-boundaries"],
-  "categories": { "correctness": "error" },
+  "categories": {
+    "correctness": "error"
+  },
   "ignorePatterns": ["drizzle/**", "scripts/lint-fixtures/**"],
   "settings": {
-    "import/resolver": { "typescript": { "alwaysTryTypes": true } },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    },
     "boundaries/elements": [
-      { "type": "app", "pattern": "src/app" },
-      { "type": "pages", "pattern": "src/pages/*", "capture": ["slice"] },
-      { "type": "widgets", "pattern": "src/widgets/*", "capture": ["slice"] },
-      { "type": "features", "pattern": "src/features/*", "capture": ["slice"] },
-      { "type": "entities", "pattern": "src/entities/*", "capture": ["slice"] },
-      { "type": "shared", "pattern": "src/shared" },
-      { "type": "routes", "pattern": "app/**", "partialMatch": false }
+      {
+        "type": "app",
+        "pattern": "src/app"
+      },
+      {
+        "type": "pages",
+        "pattern": "src/pages/*",
+        "capture": ["slice"]
+      },
+      {
+        "type": "widgets",
+        "pattern": "src/widgets/*",
+        "capture": ["slice"]
+      },
+      {
+        "type": "features",
+        "pattern": "src/features/*",
+        "capture": ["slice"]
+      },
+      {
+        "type": "entities",
+        "pattern": "src/entities/*",
+        "capture": ["slice"]
+      },
+      {
+        "type": "shared",
+        "pattern": "src/shared"
+      },
+      {
+        "type": "routes",
+        "pattern": "app/**",
+        "partialMatch": false
+      }
     ]
   },
   "rules": {
@@ -24,81 +56,237 @@
         "default": "disallow",
         "policies": [
           {
-            "from": { "element": { "type": "routes" } },
+            "from": {
+              "element": {
+                "type": "routes"
+              }
+            },
             "allow": [
-              { "to": { "element": { "type": "app" } } },
-              { "to": { "element": { "type": "pages" } } }
+              {
+                "to": {
+                  "element": {
+                    "type": "app"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "pages"
+                  }
+                }
+              }
             ]
           },
           {
-            "from": { "element": { "type": "app" } },
+            "from": {
+              "element": {
+                "type": "app"
+              }
+            },
             "allow": [
-              { "to": { "element": { "type": "app" } } },
-              { "to": { "element": { "type": "pages" } } },
-              { "to": { "element": { "type": "widgets" } } },
-              { "to": { "element": { "type": "features" } } },
-              { "to": { "element": { "type": "entities" } } },
-              { "to": { "element": { "type": "shared" } } }
+              {
+                "to": {
+                  "element": {
+                    "type": "app"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "pages"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "widgets"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "features"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "entities"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "shared"
+                  }
+                }
+              }
             ]
           },
           {
-            "from": { "element": { "type": "pages" } },
+            "from": {
+              "element": {
+                "type": "pages"
+              }
+            },
             "allow": [
               {
                 "to": {
                   "element": {
                     "type": "pages",
-                    "captured": { "slice": "{{ from.element.captured.slice }}" }
+                    "captured": {
+                      "slice": "{{ from.element.captured.slice }}"
+                    }
                   }
                 }
               },
-              { "to": { "element": { "type": "widgets" } } },
-              { "to": { "element": { "type": "features" } } },
-              { "to": { "element": { "type": "entities" } } },
-              { "to": { "element": { "type": "shared" } } }
+              {
+                "to": {
+                  "element": {
+                    "type": "widgets"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "features"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "entities"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "shared"
+                  }
+                }
+              }
             ]
           },
           {
-            "from": { "element": { "type": "widgets" } },
+            "from": {
+              "element": {
+                "type": "widgets"
+              }
+            },
             "allow": [
               {
                 "to": {
                   "element": {
                     "type": "widgets",
-                    "captured": { "slice": "{{ from.element.captured.slice }}" }
+                    "captured": {
+                      "slice": "{{ from.element.captured.slice }}"
+                    }
                   }
                 }
               },
-              { "to": { "element": { "type": "features" } } },
-              { "to": { "element": { "type": "entities" } } },
-              { "to": { "element": { "type": "shared" } } }
+              {
+                "to": {
+                  "element": {
+                    "type": "features"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "entities"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "shared"
+                  }
+                }
+              }
             ]
           },
           {
-            "from": { "element": { "type": "features" } },
+            "from": {
+              "element": {
+                "type": "features"
+              }
+            },
             "allow": [
               {
                 "to": {
                   "element": {
                     "type": "features",
-                    "captured": { "slice": "{{ from.element.captured.slice }}" }
+                    "captured": {
+                      "slice": "{{ from.element.captured.slice }}"
+                    }
                   }
                 }
               },
-              { "to": { "element": { "type": "entities" } } },
-              { "to": { "element": { "type": "shared" } } }
+              {
+                "to": {
+                  "element": {
+                    "type": "entities"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "shared"
+                  }
+                }
+              }
             ]
           },
           {
-            "from": { "element": { "type": "entities" } },
+            "from": {
+              "element": {
+                "type": "entities"
+              }
+            },
             "allow": [
-              { "to": { "element": { "type": "entities" } } },
-              { "to": { "element": { "type": "shared" } } }
+              {
+                "to": {
+                  "element": {
+                    "type": "entities"
+                  }
+                }
+              },
+              {
+                "to": {
+                  "element": {
+                    "type": "shared"
+                  }
+                }
+              }
             ]
           },
           {
-            "from": { "element": { "type": "shared" } },
-            "allow": [{ "to": { "element": { "type": "shared" } } }]
+            "from": {
+              "element": {
+                "type": "shared"
+              }
+            },
+            "allow": [
+              {
+                "to": {
+                  "element": {
+                    "type": "shared"
+                  }
+                }
+              }
+            ]
           }
         ]
       }
@@ -181,6 +369,35 @@
               {
                 "regex": "/index\\.server$",
                 "message": "Client components cannot import index.server modules."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["app/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/pages/*/**",
+                  "@/widgets/*/**",
+                  "@/features/*/**",
+                  "@/entities/*/**",
+                  "!@/*/*/index.server",
+                  "!@/entities/*/@x/*",
+                  "@/shared/*/*/**",
+                  "@/app/*/**"
+                ],
+                "message": "Import from the slice's public API (@/<layer>/<slice> or @/<layer>/<slice>/index.server), not its internals. shared/app: import by segment, e.g. @/shared/ui/button."
+              },
+              {
+                "regex": "(^|/)src/",
+                "message": "Route files in app/ must re-export through @/ aliases (e.g. @/pages/home), not relative paths into src/."
               }
             ]
           }
