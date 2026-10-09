@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Proves the FSD lint rules catch violations and allow the documented exemptions.
 # Each fixture lives in scripts/lint-fixtures/<pass|fail>-<name>/src/**. It is copied
-# into src/, linted with oxlint, then removed. "fail-*" fixtures must make oxlint exit
-# non-zero; "pass-*" fixtures must lint clean.
+# into src/, linted with oxlint, then removed. "fail-*" fixtures must make oxlint report
+# the rule named in their `expected-rule` file (so an unrelated error, or "No files found",
+# never counts as caught); "pass-*" fixtures must lint clean.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -37,8 +38,15 @@ for fixture in scripts/lint-fixtures/*/; do
   # shellcheck disable=SC2086
   if output=$($oxlint $files 2>&1); then status=0; else status=$?; fi
 
-  if [ "$expect" = "fail" ] && [ "$status" -eq 0 ]; then
-    echo "FAIL $name: expected lint errors, got none"
+  expected_rule=""
+  if [ -f "${fixture}expected-rule" ]; then expected_rule=$(cat "${fixture}expected-rule"); fi
+
+  if [ "$expect" = "fail" ] && [ -z "$expected_rule" ]; then
+    echo "FAIL $name: missing ${fixture}expected-rule"
+    problems=$((problems + 1))
+  elif [ "$expect" = "fail" ] && { [ "$status" -eq 0 ] || [[ "$output" != *"$expected_rule"* ]]; }; then
+    echo "FAIL $name: expected a $expected_rule error, got:"
+    echo "$output"
     problems=$((problems + 1))
   elif [ "$expect" = "pass" ] && [ "$status" -ne 0 ]; then
     echo "FAIL $name: expected clean lint, got:"
